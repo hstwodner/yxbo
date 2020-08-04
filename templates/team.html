@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <title>小组</title>
+    <!-- 引入 echarts.js -->
+    <script src="{% static "js/echarts.min.js" %}"></script>
+</head>
+<body>
+    <div id="order" style="width: 80%;height:400px; position:relative;left:10%;top:100px;" style=""></div>
+    <div id="cash" style="width: 80%;height:400px; position:relative;left:10%;top:100px;" style=""></div>
+    <div id="callcount" style="width: 80%;height:400px; position:relative;left:10%;top:100px;" style=""></div>
+    <div id="calltime" style="width: 80%;height:400px; position:relative;left:10%;top:100px;" style=""></div>
+    <div id="ATT" style="width: 80%;height:400px; position:relative;left:10%;top:100px;" style=""></div>
+    <script type="text/javascript">
+        const data = generateData();
+        let option = {
+            color: ['#4cabce', '#003366', '#e5323e'],
+            title: {
+                left:20,
+                textStyle: {
+                    color: "#436EEE",
+                    fontSize: 17,
+                }
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                        color: '#999'
+                    }
+                }
+            },
+            toolbox: {
+                feature: {
+                    dataView: {show: true, readOnly: false},
+                }
+            },
+            legend: {
+                data: ['数据', '占比']
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: data.categoryData,
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    min: 0,
+                    interval: 10,
+                    silent: false,
+                    splitLine: {
+                        show: false
+                    },
+                    splitArea: {
+                        show: false
+            },
+                },
+                {
+                    type: 'value',
+                    name: '占比',
+                    min: 0,
+                    max: 100,
+                    interval: 10,
+                    axisLabel: {
+                        formatter: '{value} %'
+                    }
+                }
+            ],
+        };
+        function generateData() {
+            const member = {{ member | safe }};
+
+        return {
+            categoryData: member,
+        };
+    }
+
+        let myChart = echarts.init(document.getElementById('order'));
+        option['title']['text'] = '订单总览';
+        option['series'] = [
+            {
+                name: '数据',
+                type: 'bar',
+                data: {{ data }}
+            },
+            {
+                name: '占比',
+                type: 'line',
+                yAxisIndex: 1,
+                data: {{ percentage }}
+            }
+        ]
+        myChart.setOption(option);
+
+        myChart = echarts.init(document.getElementById('cash'));
+        option['title']['text'] = '金额总览';
+        option['series'] = [
+            {
+                name: '数据',
+                type: 'bar',
+                data: {{ data }}
+            },
+            {
+                name: '占比',
+                type: 'line',
+                yAxisIndex: 1,
+                data: {{ percentage }}
+            }
+        ]
+        myChart.setOption(option);
+
+        myChart = echarts.init(document.getElementById('callcount'));
+        option['title']['text'] = '通次总览';
+        option['series'] = [
+            {
+                name: '数据',
+                type: 'bar',
+                data: {{ data }}
+            },
+            {
+                name: '占比',
+                type: 'line',
+                yAxisIndex: 1,
+                data: {{ percentage }}
+            }
+        ]
+        myChart.setOption(option);
+
+        myChart = echarts.init(document.getElementById('calltime'));
+        option['title']['text'] = '通时总览';
+        option['series'] = [
+            {
+                name: '数据',
+                type: 'bar',
+                data: {{ data }}
+            },
+            {
+                name: '占比',
+                type: 'line',
+                yAxisIndex: 1,
+                data: {{ percentage }}
+            }
+        ]
+        myChart.setOption(option);
+
+        myChart = echarts.init(document.getElementById('ATT'));
+        option['title']['text'] = 'ATT总览';
+        option['series'] = [
+            {
+                name: '数据',
+                type: 'bar',
+                data: {{ data }}
+            },
+            {
+                name: '占比',
+                type: 'line',
+                yAxisIndex: 1,
+                data: {{ percentage }}
+            }
+        ]
+        myChart.setOption(option);
+    </script>
+</body>
+</html>

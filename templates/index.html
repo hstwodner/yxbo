@@ -1,0 +1,172 @@
+<!-- <!DOCTYPE html> -->
+<html>
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <title>总览</title>
+    <!-- 引入 echarts.js -->
+    <script src="{% static "js/echarts.min.js" %}"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static "css/bootstrap.min.css"%}">
+    <script src="{% static "js/jquery.min.js"%}"></script>
+    <script src="{% static "js/popper.min.js"%}"></script>
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+</head>
+
+<body>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="order" style="width: 80%;height:400px; position:relative;left:10%;top:100px;"></div>
+<div id="cash" style="width: 80%;height:400px; position:relative;left:10%;top:100px;" style=""></div>
+<div id="callcount" style="width: 80%;height:400px; position:relative;left:10%;top:100px;" style=""></div>
+<div id="calltime" style="width: 80%;height:400px; position:relative;left:10%;top:100px;" style=""></div>
+<div id="ATT" style="width: 80%;height:400px; position:relative;left:10%;top:100px;" style=""></div>
+
+<script type="text/javascript">
+    const data = generateData();
+    // 指定图表的配置项和数据
+    let option = {
+        title: {
+            text: '订单总览',
+            left:20,
+            textStyle: {
+                color: "#436EEE",
+                fontSize: 17,
+                }
+        },
+        toolbox: {
+            feature: {
+                dataZoom: {
+                    yAxisIndex: false
+                },
+            }
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        legend: {
+            data:data.tl_lst
+        },
+        grid: {
+            bottom: 60
+        },
+        dataZoom: [{
+                type: 'inside'
+            }, {
+                type: 'slider'
+        }],
+
+        xAxis: {
+            data: data.categoryData,
+            silent: false,
+            splitLine: {
+                show: false
+            },
+            splitArea: {
+                show: false
+            }
+        },
+        yAxis: {
+            splitArea: {
+                show: false
+            }
+        },
+    };
+    function generateData() {
+        const myDate = new Date();
+        var time = +new Date(myDate.getFullYear(), myDate.getMonth(), 1);
+        var categoryData = [];
+        const tl_lst = {{ lstTLname | safe }};
+
+        function getDateCount() {
+            return new Date(myDate.getFullYear(),myDate.getMonth()+1,0).getDate();
+        }
+
+        for (let i = 0; i < getDateCount(); i++) {
+            categoryData.push(echarts.format.formatTime('yyyy-MM-dd', time));
+            time += 86400000;
+        }
+
+        return {
+            categoryData: categoryData,
+            tl_lst:tl_lst,
+        };
+    }
+
+    // 基于准备好的dom，初始化echarts实例
+    let myChart = echarts.init(document.getElementById('order'));
+    option['series'] =[
+    {% for k, v in order_series.items %}
+        {
+            name: '{{ k }}',
+            type: 'bar',
+            stack: '{{ v.stack }}',
+            data: {{v.data}}
+        },
+        {% endfor %}
+    ]
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+
+    //---第二个图表
+    myChart = echarts.init(document.getElementById('cash'));
+    option['title']['text'] = '金额总览';
+    option['series'] =[
+    {% for k, v in order_series.items %}
+        {
+            name: '{{ k }}',
+            type: 'bar',
+            stack: '{{ v.stack }}',
+            data: {{v.data}}
+        },
+        {% endfor %}
+    ]
+    myChart.setOption(option);
+
+    //---第三个图表
+    myChart = echarts.init(document.getElementById('callcount'));
+    option['title']['text'] = '通次总览';
+    option['series'] =[
+    {% for k, v in order_series.items %}
+        {
+            name: '{{ k }}',
+            type: 'bar',
+            stack: '{{ v.stack }}',
+            data: {{v.data}}
+        },
+        {% endfor %}
+    ]
+    myChart.setOption(option);
+
+    myChart = echarts.init(document.getElementById('calltime'));
+    option['title']['text'] = '通时总览';
+    option['series'] =[
+    {% for k, v in order_series.items %}
+        {
+            name: '{{ k }}',
+            type: 'bar',
+            stack: '{{ v.stack }}',
+            data: {{v.data}}
+        },
+        {% endfor %}
+    ]
+    myChart.setOption(option);
+
+    myChart = echarts.init(document.getElementById('ATT'));
+    option['title']['text'] = 'ATT总览';
+    option['series'] =[
+    {% for k, v in order_series.items %}
+        {
+            name: '{{ k }}',
+            type: 'bar',
+            stack: '{{ v.stack }}',
+            data: {{v.data}}
+        },
+        {% endfor %}
+    ]
+    myChart.setOption(option);
+</script>
+</body>
+</html>
